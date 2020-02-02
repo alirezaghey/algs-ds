@@ -8,8 +8,8 @@ from typing import Any
 
 class _Node:
     def __init__(self, data: Any, nextNode: _Node=None):
-        self._data = data
-        self._next = nextNode
+        self._data: Any = data
+        self._next: _Node = nextNode
     
     def __str__(self):
         return str(self._data)
@@ -19,9 +19,9 @@ class SinglyLinkedList:
     # private Node class for internal use
 
     def __init__(self):
-        self._size = 0
-        self._head = None
-        self._tail = None
+        self._size: int = 0
+        self._head: _Node = None
+        self._tail: _Node = None
 
     
     # Deletes all nodes in the linked list
