@@ -7,6 +7,7 @@ from typing import Any
 #
 # Author: Alireza Ghey
 
+# private Node class for internal use
 class _Node:
     def __init__(self, data: Any, nextNode: _Node=None):
         self._data: Any = data
@@ -17,12 +18,14 @@ class _Node:
 
 class SinglyLinkedList:
     
-    # private Node class for internal use
 
     def __init__(self):
         self._size: int = 0
         self._head: _Node = None
         self._tail: _Node = None
+
+    def __len__(self):
+        return self._size
 
     
     # Deletes all nodes in the linked list
@@ -42,16 +45,6 @@ class SinglyLinkedList:
     def isEmpty(self) -> bool:
         return len(self) == 0
     
-    # Adds a node to the tail of the linked list
-    # TC: O(1)
-    def addLast(self, data: Any) -> None:
-        if self.isEmpty():
-            self._head = self._tail = _Node(data)
-        else:
-            self._tail.next = _Node(data)
-            self._tail = self._tail._next
-        self._size += 1
-
     # Add a node to the head of the linked list
     # TC: O(1)
     def addFirst(self, data: Any) -> None:
@@ -62,7 +55,17 @@ class SinglyLinkedList:
             newHead._next = self._head
             self._head = newHead
         self._size += 1
-            
+
+    # Adds a node to the tail of the linked list
+    # TC: O(1)
+    def addLast(self, data: Any) -> None:
+        if self.isEmpty():
+            self._head = self._tail = _Node(data)
+        else:
+            self._tail.next = _Node(data)
+            self._tail = self._tail._next
+        self._size += 1
+
     # Add a node at the specified index
     # TC: O(n)
     def addAt(self, index: int, data: Any) -> None:
@@ -191,8 +194,5 @@ class SinglyLinkedList:
         return self.indexOf(data) != -1
 
     # TODO: Implement iterator
-
-    def __len__(self):
-        return self._size
     
     
