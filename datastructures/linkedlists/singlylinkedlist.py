@@ -31,6 +31,7 @@ class SinglyLinkedList:
         while curr != None:
             nextNode = curr._next
             curr._next = None
+            curr._data = None
             curr = nextNode
         
         self._head = self._tail = None
