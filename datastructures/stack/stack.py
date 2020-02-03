@@ -1,4 +1,3 @@
-from __future__ import annotations
 from typing import Any, List
 
 # A stack implementation using Python's built in lists
