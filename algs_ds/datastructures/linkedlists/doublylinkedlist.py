@@ -47,7 +47,7 @@ class DoublyLinkedList:
     def add(self, data: Any) -> None:
         self.addLast(data)
     
-    
+
     # Add node to the tail of linked list
     # TC: O(1)
     def addLast(self, data: Any) -> None:
@@ -170,12 +170,12 @@ class DoublyLinkedList:
             raise RuntimeError("Linked list is empty")
 
         curr = self._head
+        index = 0
         while curr != None:
             if curr._data == data:
-                curr._prev._next = curr._next
-                curr._next._prev = curr._prev
-                self._size -= 1
+                self.removeAt(index)
                 return True
+            index += 1
             curr = curr._next
         
         return False
