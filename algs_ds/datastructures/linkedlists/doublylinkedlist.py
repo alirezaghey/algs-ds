@@ -44,6 +44,12 @@ class DoublyLinkedList:
     
     # Add node to the tail of linked list
     # TC: O(1)
+    def add(self, data: Any) -> None:
+        self.addLast(data)
+    
+    
+    # Add node to the tail of linked list
+    # TC: O(1)
     def addLast(self, data: Any) -> None:
         if self.isEmpty():
             self._head = self._tail = _Node(data)
