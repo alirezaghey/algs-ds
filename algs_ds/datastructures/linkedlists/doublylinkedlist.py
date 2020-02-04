@@ -58,24 +58,25 @@ class DoublyLinkedList:
         if self.isEmpty():
             self._head = self._tail = _Node(data)
         else:
-            self._head.prev = _Node(data, None, self._head)
+            self._head._prev = _Node(data, None, self._head)
             self._head = self._head._prev
         self._size += 1
 
     # Add node at the specified index
     # TC: O(n)
     def addAt(self, index: int, data: Any) -> None:
-        if index < 0 or index >= len(self):
+        if index < 0 or index > len(self):
             raise ValueError("Specified index is out of range")
 
         if index == 0:
-            self.addFirst(data)
+            return self.addFirst(data)
         elif index == len(self):
-            self.addLast(data)
+            return self.addLast(data)
         else:
             curr = self._head
             for _ in range(index-1):
                 curr = curr._next
+            print(curr._data)
             newNode = _Node(data, curr, curr._next)
             curr._next = newNode
             curr._next._prev = newNode
@@ -127,7 +128,7 @@ class DoublyLinkedList:
         else:
             data = self._tail._data
             self._tail = self._tail._prev
-            self._tail._next.prev = None
+            self._tail._next._prev = None
             self._tail._next = None
         
         self._size -= 1
