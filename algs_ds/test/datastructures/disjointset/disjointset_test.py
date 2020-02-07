@@ -215,8 +215,11 @@ class Test_DisjointSet:
 
     def test_badDisjointSetConstructor(self):
         with pytest.raises(ValueError):
-            ds = DisjointSet(0)
+            # This is just to test the constructor for bad values
+            # We don't assign it to a variable because the linter
+            # would complain. We also have no use for them.
+            DisjointSet(0)
         with pytest.raises(ValueError):
-            ds = DisjointSet(-1)
+            DisjointSet(-1)
         with pytest.raises(ValueError):
-            ds = DisjointSet(-346)
+            DisjointSet(-346)
