@@ -74,7 +74,7 @@ class BinarySearchTree:
         if not self.contains(data):
             return False
         
-        root = self._remove(self._root, data)
+        self._root = self._remove(self._root, data)
         self._nodeCount -= 1
         return True
         
