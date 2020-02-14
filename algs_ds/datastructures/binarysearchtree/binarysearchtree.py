@@ -160,12 +160,12 @@ class BinarySearchTree:
 
         # Dig left because the value we are seeking
         # is less than the current value
-        if node._data < data:
+        if data < node._data:
             return self._contains(node._left, data)
         
         # Dig right because the value we are seeking
         # is greater than the current value
-        elif node._data > data:
+        elif data > node._data:
             return self._contains(node._right, data)
         
         # Found the value we are looking for
