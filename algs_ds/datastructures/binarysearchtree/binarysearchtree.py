@@ -123,7 +123,7 @@ class BinarySearchTree:
             # This implementation takes the smallest node on the right subtree
             else:
                 # Find the leftmost node in the right subtree
-                temp = self._findMax(node._right)
+                temp = self._findMin(node._right)
 
                 # Swap the data
                 node._data = temp._data
@@ -132,7 +132,9 @@ class BinarySearchTree:
                 # that we found and swapped data with.
                 # Prevents the BST from having two nodes with the same data
                 node._right = self._remove(node._right, temp._data)
+        return node
 
+        
     # Private method to find the leftmost node
     # TC: O(log n) deteriorates to O(n) in case the BST is left skewed
     def _findMin(self, node: _Node) -> _Node:
