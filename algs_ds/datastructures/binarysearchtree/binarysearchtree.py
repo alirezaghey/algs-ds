@@ -16,10 +16,17 @@ class _Node:
 
 # Enumerator class to define the type of traversal
 class TraversalType:
+    mapping = {0: "PreOrder", 1: "InOrder", 2: "PostOrder", 3: "LevelOrder"}
     PreOrder = 0
     InOrder = 1
     PostOrder = 2
     LevelOrder = 3
+
+    # Static method to print out TraversalType for debugging purposes
+    @staticmethod
+    def toString(travType: TraversalType):
+        return TraversalType.mapping[travType]
+
 
 class BinarySearchTree:
     def __init__(self):
@@ -194,28 +201,28 @@ class BinarySearchTree:
             return self._inOrder()
         elif travType == TraversalType.PostOrder:
             return self._postOrder()
-        elif travType == TraversalType.levelOrder:
+        elif travType == TraversalType.LevelOrder:
             return self._levelOrder()
         else:
             raise ValueError("Uknown traversal type")
     
     # Returns an iterator to traverse the tree in pre order
     def _preOrder(self) -> Iterator:
-        stack = [self._root]
+        stack = [self._root] if self._root else []
 
         while stack:
             node = stack.pop()
             if node._right: stack.append(node._right)
             if node._left: stack.append(node._left)
             yield node._data
-        raise StopIteration()
+
 
     # Returns an iterator to traverse the tree in order
     def _inOrder(self) -> Iterator:
         stack = [self._root]
         trav: _Node = self._root
 
-        while trav:
+        while trav and stack:
             # Dig left
             while trav and trav._left:
                 stack.append(trav._left)
@@ -230,7 +237,6 @@ class BinarySearchTree:
             
             yield node._data
         
-        raise StopIteration()
 
     # Returns an iterator to traverse the tree post order
     def _postOrder(self) -> Iterator:
@@ -246,16 +252,15 @@ class BinarySearchTree:
         while stack2:
             yield stack2.pop()._data
         
-        raise StopIteration()
+
 
     def _levelOrder(self) -> Iterator:
-        deq = deque([self._root])
+        deq = deque([self._root]) if self._root else deque()
         
         while deq:
             node = deq.popleft()
+            
+            yield node._data
+
             if node._left: deq.append(node._left)
             if node._right: deq.append(node._right)
-
-            yield node._data
-        
-        raise StopIteration()
