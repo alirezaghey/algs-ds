@@ -2,7 +2,7 @@ from __future__ import annotations
 from collections import deque
 from typing import Any
 from typing import Iterator
-# A Disjoint Set implementation
+# A BST implementation
 #
 #
 # Author: Alireza Ghey
