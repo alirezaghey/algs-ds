@@ -5,8 +5,14 @@
 
 from  algs_ds.datastructures.linkedlists.doublylinkedlist import DoublyLinkedList
 import pytest
+import random
+from typing import List
 
 class Test_DoublyLinkedList:
+    LOOPS = 10000
+    TEST_SZ = 40
+    NUM_NULLS = TEST_SZ // 40
+    MAX_RAND_NUM = 250
 
     def test_emptyList(self):
         l = DoublyLinkedList()
@@ -196,23 +202,127 @@ class Test_DoublyLinkedList:
 
 # TODO: Implement below funcitons
     def test_removeAt(self):
-        pass
+        l = DoublyLinkedList()
+
+        l.add(1)
+        l.add(2)
+        l.add(3)
+        l.add(4)
+        l.removeAt(0)
+        l.removeAt(2)
+        assert l.peekFirst() == 2
+        assert l.peekLast() == 3
+        l.removeAt(1)
+        assert l.peekFirst() == 2
+        assert l.peekLast() == 2
+        l.removeAt(0)
+        assert len(l) == 0
 
     def test_clear(self):
-        pass
+        l = DoublyLinkedList()
+
+        l.add(22)
+        l.add(33)
+        l.add(44)
+        assert len(l) == 3
+        l.clear()
+        assert len(l) == 0
+        l.add(22)
+        l.add(33)
+        l.add(44)
+        assert len(l) == 3
+        l.clear()
+        assert len(l) == 0
 
     def test_randomizedRemoving(self):
-        pass
+        for _ in range(Test_DoublyLinkedList.LOOPS):
+            dblActual = DoublyLinkedList()
+            arrExpected = []
 
+            randNums = self.genRandList(Test_DoublyLinkedList.TEST_SZ)
+
+            for num in randNums:
+                dblActual.add(num)
+                arrExpected.append(num)
+
+            random.shuffle(randNums)
+
+            for num in randNums:
+                assert dblActual.remove(num) == (num in arrExpected)
+                arrExpected.remove(num)
+
+                assert len(dblActual) == len(arrExpected)
+
+                # TODO
+                # Test for content to be exactly the same after iterator
+                # for DoublyLinkedList has been implemented
+
+            
+
+                
     def test_randomizedRemoveAt(self):
-        pass
+        dblActual = DoublyLinkedList()
+        arrExpected = []
+
+        randArr = self.genRandList(Test_DoublyLinkedList.TEST_SZ)
+
+        for num in randArr:
+            dblActual.add(num)
+            arrExpected.append(num)
+        
+        for _ in range(len(randArr)):
+            removeIdx = random.randrange(0, len(arrExpected))
+
+            assert dblActual.removeAt(removeIdx) == arrExpected[removeIdx]
+            arrExpected = arrExpected[:removeIdx] + arrExpected[removeIdx+1:]
+
+            assert len(dblActual) == len(arrExpected)
+
+            # TODO
+            # Test for content to be exactly the same after iterator
+            # for DoublyLinkedList has been implemented
+
 
     def test_randomizedIndexOf(self):
-        pass
+        dblActual = DoublyLinkedList()
+        arrExpected = []
 
-    def genRandList(self):
-        pass
+        for _ in range(Test_DoublyLinkedList.LOOPS):
+            randArr = self.genRandList(Test_DoublyLinkedList.TEST_SZ)
 
+            for num in randArr:
+                dblActual.add(num)
+                arrExpected.append(num)
+
+            random.shuffle(randArr)
+
+            for num in randArr:
+                assert dblActual.indexOf(num) == arrExpected.index(num)
+                assert len(dblActual) == len(arrExpected)
+
+
+                # TODO
+                # Test for content to be exactly the same after iterator
+                # for DoublyLinkedList has been implemented
+                
+
+    def genRandList(self, size: int) -> List[int]:
+        arr = []
+        for _ in range(size):
+            arr.append(random.randint(0, Test_DoublyLinkedList.MAX_RAND_NUM))
+        for _ in range(Test_DoublyLinkedList.NUM_NULLS):
+            arr.append(None)
+        
+        random.shuffle(arr)
+        return arr
+
+    def genUniqueRandList(self, size: int) -> List[int]:
+        arr = [i for i in range(size)]
+        for _ in range(Test_DoublyLinkedList.NUM_NULLS):
+            arr.append(None)
+        
+        random.shuffle(arr)
+        return arr
 
     
 
