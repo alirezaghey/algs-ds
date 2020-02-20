@@ -9,7 +9,7 @@ from typing import Iterator
 
 # Private Node class for internal use
 class _Node:
-    def __init__(self, data: Any, left:Node=None, right:Node=None):
+    def __init__(self, data: Any, left:_Node=None, right:_Node=None):
         self._data = data
         self._left = left
         self._right = right
