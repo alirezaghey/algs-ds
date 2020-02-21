@@ -3,9 +3,9 @@
 #
 # Author: Alireza Ghey
 
+from __future__ import annotations
 from typing import Any, Optional, List, Iterator
 from collections.abc import Hashable
-from singlylinkedlist import SinglyLinkedList
 
 class Entry:
     def __init__(self, k: Any, v: Any):
@@ -17,10 +17,10 @@ class Entry:
         
 
     def __eq__(self, other: Entry) -> bool:
-        if self.hash != other.hash: return False
+        if not isinstance(other, Entry) or self.hash != other.hash: return False
         return self.key == other.key
 
-    def __str(self):
+    def __str__(self):
         return str(self.key) + " => " + str(self.value)
     
 
@@ -28,9 +28,10 @@ class HashtableSeparateChaining:
     DEFAULT_CAPACITY = 3
     DEFAULT_LOAD_FACTOR = 0.75
 
-    def __init__(self, capacity: Optional[int], max_load_factor: Optional[float]):
-        if capacity < 0: raise ValueError("Illegal capacity")
-        if 0 >= max_load_factor >= 1: raise ValueError("Max load factor must be between 0 and 1, exclusive")
+    def __init__(self, capacity: Optional[int]=None, max_load_factor: Optional[float]=None):
+        if capacity and capacity < 0: raise ValueError("Illegal capacity")
+        if max_load_factor != None and (max_load_factor <= 0 or max_load_factor >= 1):
+            raise ValueError("Max load factor must be between 0 and 1, exclusive")
 
         self.max_load_factor = max_load_factor or HashtableSeparateChaining.DEFAULT_LOAD_FACTOR
         self.capacity = capacity or HashtableSeparateChaining.DEFAULT_CAPACITY
@@ -97,7 +98,7 @@ class HashtableSeparateChaining:
 
         bucket_index = self._normalize_index(hash(k))
         entry = self._bucket_seek_entry(bucket_index, k)
-        if entry != None: return entry.value
+        if not entry is None: return entry.value
 
 
     # Removes a key from the map and returns the value
@@ -129,9 +130,9 @@ class HashtableSeparateChaining:
     def _bucket_insert_entry(self, bucket_index: int, entry: Entry) -> Any:
         bucket = self.table[bucket_index]
         if bucket == None:
-            self.table[bucket_index] = SinglyLinkedList()
+            bucket = self.table[bucket_index] = SinglyLinkedList()
         
-        existent_entry = bucket.find(entry.k)
+        existent_entry = bucket.find(entry.key)
         if existent_entry == None:
             bucket.add(entry)
             self.size += 1
@@ -170,6 +171,7 @@ class HashtableSeparateChaining:
             for entry in self.table[i].entries():
                 bucket_index = self._normalize_index(entry.hash)
                 bucket = newTable[bucket_index] if newTable[bucket_index] != None else SinglyLinkedList()
+                newTable[bucket_index] = bucket
                 bucket.add(entry)
             
             self.table[i].clear()
@@ -208,9 +210,231 @@ class HashtableSeparateChaining:
         for el in self.table:
             if el == None: continue
             for entry in el.entries():
-                res.append("\n", "\t", str(entry))
-        res.append("\n", "}")
+                res.extend(["\n", "\t", str(entry)])
+        res.extend(["\n", "}"])
         return "".join(res)
+
+
+
+
+
+# A singly linked list implementation
+# for use in a hashtable with separate chaining
+#
+# Author: Alireza Ghey
+
+# private Node class for internal use
+class _Node:
+    def __init__(self, data: Any, nextNode: _Node=None):
+        self._data: Any = data
+        self._next: _Node = nextNode
+    
+    def __str__(self):
+        return str(self._data)
+
+class SinglyLinkedList:
+    
+
+    def __init__(self):
+        self._size: int = 0
+        self._head: _Node = None
+        self._tail: _Node = None
+
+    def __len__(self):
+        return self._size
+
+    
+    # Deletes all nodes in the linked list
+    # TC: O(n)
+    def clear(self) -> None:
+        curr = self._head
+        while curr != None:
+            nextNode = curr._next
+            curr._next = None
+            curr._data = None
+            curr = nextNode
+        
+        self._head = self._tail = None
+        self._size = 0
+
+    # Whether linked list is empty or not
+    def isEmpty(self) -> bool:
+        return len(self) == 0
+    
+
+    # Add a node to the head of the linked list
+    # Wrapper for addFirst
+    # TC: O(1)
+    def add(self, entry) -> None:
+        self.addFirst(entry)
+    
+    # Add a node to the head of the linked list
+    # TC: O(1)
+    def addFirst(self, data: Any) -> None:
+        if self.isEmpty():
+            self._head = self._tail = _Node(data)
+        else:
+            newHead = _Node(data)
+            newHead._next = self._head
+            self._head = newHead
+        self._size += 1
+
+    # Adds a node to the tail of the linked list
+    # TC: O(1)
+    def addLast(self, data: Any) -> None:
+        if self.isEmpty():
+            self._head = self._tail = _Node(data)
+        else:
+            self._tail.next = _Node(data)
+            self._tail = self._tail._next
+        self._size += 1
+
+    # Add a node at the specified index
+    # TC: O(n)
+    def addAt(self, index: int, data: Any) -> None:
+        if index < 0 or index > len(self):
+            raise ValueError("Specified index is out of range")
+        
+        if index == 0:
+            self.addFirst(data)
+        elif index == len(self):
+            self.addLast(data)
+        else:
+            curr = self._head
+            for _ in range(index-1):
+                curr = curr._next
+            newNode = _Node(data)
+            newNode._next = curr._next
+            curr._next = newNode
+            self._size += 1
+    
+    # Return value of head if exists
+    # TC: O(1)
+    def peekFirst(self) -> Any:
+        if len(self) == 0:
+            raise RuntimeError("Linked list is empty")
+        return self._head._data
+
+    # Return value of tail if exists
+    # TC: O(1)
+    def peekLast(self) -> Any:
+        if len(self) == 0:
+            raise RuntimeError("Linked list is empty")
+        return self._tail._data
+
+    # Remove head node and return its data
+    # TC: O(1)
+    def removeFirst(self) -> Any:
+        if self.isEmpty():
+            raise RuntimeError("Linked list is empty")
+        
+        data = self._head._data
+        newHead = self._head._next
+        self._head._next = None
+        self._head = newHead
+        
+        self._size -= 1
+
+        if self.isEmpty():
+            self._tail = None
+        
+        return data
+
+    # Remove tail node and return its data
+    # TC: O(n)
+    def removeLast(self) -> Any:
+        if self.isEmpty():
+            raise RuntimeError("Linked list is empty")
+        
+        data = self._tail._data
+        if len(self) == 1:
+            self._head = self._tail = None            
+        else:
+            curr = self._head
+            while curr._next and curr._next._next:
+                curr = curr.next
+            curr.next = None
+            self._tail = curr
+        
+        self._size -= 1
+        return data
+            
+    # Removes a node as specified index
+    # TC: O(n)
+    def removeAt(self, index: int) -> Any:
+        if index < 0 or index >= len(self):
+            raise ValueError("Index out of bounds")
+
+        if index == 0:
+            return self.removeFirst()
+        if index == len(self)-1:
+            return self.removeLast()
+        
+        curr = self._head
+        for _ in range(index-1):
+            curr = curr._next
+        
+        data = curr._next._data
+        curr._next = curr._next._next
+        self._size -= 1
+        return data
+        
+    # Removes the first occurence the node with the specified data
+    # Returns the removed node's data or None if not found
+    # TC: O(n)
+    def remove(self, data: Any) -> Any:
+        if len(self) == 0:
+            raise RuntimeError("Linked list is empty")
+
+        if self._head._data == data:
+            return self.removeFirst()
+
+        curr = self._head
+        while curr._next:
+            if curr._next._data == data:
+                if curr._next == self._tail:
+                    return self.removeLast()
+                removingNode = curr._next
+                curr._next = removingNode._next
+                removingNode._next = None
+                self._size -= 1
+                return removingNode._data
+        return None
+
+    # Returns index of the first occurence of a node with data
+    # TC: O(n)
+    def indexOf(self, data: Any) -> int:
+        curr = self._head
+        index = 0
+        while curr != None:
+            if curr._data == data:
+                return index
+            index += 1
+        return -1
+
+    # finds and returns an entry if keys are equal, else None
+    # TC: O(n)
+    def find(self, k: Any):
+        curr = self._head
+
+        while curr:
+            if curr._data.key == k:
+                return curr._data
+            curr = curr._next
+        return None
+
+    def entries(self) -> Iterator:
+        curr = self._head
+        while curr:
+            yield curr._data
+            curr = curr._next
+
+    def contains(self, data: Any) -> bool:
+        return self.indexOf(data) != -1
+
+    # TODO: Implement iterator
+    
+
     
 
 
